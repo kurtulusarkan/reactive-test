@@ -6,4 +6,5 @@ target
 /.project
 /.settings
 /RUNNING_PID
-/conf/twitter.conf
+twitter.conf
+
