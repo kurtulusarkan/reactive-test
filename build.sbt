@@ -15,6 +15,12 @@ libraryDependencies ++= Seq(
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
+resolvers += "Typesafe private" at
+  "https://private-repo.typesafe.com/typesafe/maven-releases"
+
+libraryDependencies +=
+  "com.typesafe.play.extras" %% "iteratees-extras" % "1.5.0"
+
 // Play provides two styles of routers, one expects its actions to be injected, the
 // other, legacy style, accesses its actions statically.
 routesGenerator := InjectedRoutesGenerator
