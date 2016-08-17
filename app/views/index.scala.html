@@ -1,7 +1,63 @@
-@(message: String)
+@(message: String)(implicit request: RequestHeader)
 
-@main("Welcome to Play") {
+@main(message) {
 
-    @play20.welcome(message)
+    <div id="tweets"></div>
 
+    <script type="text/javascript">
+
+        function appendTweet(text) {
+            var tweet = document.createElement("p");
+            var message = document.createTextNode(text);
+            tweet.appendChild(message);
+            document.getElementById("tweets").appendChild(tweet);
+        }
+
+        // get parameter from query string
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function connect(attempt) {
+
+            var key = getParameterByName("key");
+            if (!key || key == "") {
+                alert("Query string is missing: /?key=xxx");
+            }
+            var connectionAttempt = attempt;
+            var url = "@routes.Application.tweets().webSocketURL()";
+            var tweetSocket = new WebSocket(url);
+
+            tweetSocket.onmessage = function (event) {
+                var data = JSON.parse(event.data);
+                console.log(data);
+                appendTweet(data.text);
+            };
+
+            tweetSocket.onopen = function() {
+                connectionAttempt = 1;
+                tweetSocket.send(key);
+            };
+
+            tweetSocket.onclose = function() {
+                if (connectionAttempt <= 3) {
+                    appendTweet("WARNING: Lost server connection, attempting to reconnect. Attempt number " + connectionAttempt);
+                    setTimeout(function() {
+                        connect(connectionAttempt + 1);
+                    }, 5000);
+                } else {
+                    alert("The connection with the server was lost.");
+                }
+            };
+        }
+
+        connect(1);
+    </script>
 }
+

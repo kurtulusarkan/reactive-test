@@ -1,1 +1,8 @@
-Reactive test 1
+# Reactive test 1
+
+A demo application to retrieve a twitter stream using akka-actors and distributing it back to clients using WebSockets.
+
+
+
+
+
